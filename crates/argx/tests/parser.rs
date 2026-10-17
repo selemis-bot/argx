@@ -8,7 +8,9 @@
 #[cfg(test)]
 #[cfg(feature = "derive")]
 mod tests {
-    use std::{ffi::OsString, path::PathBuf, process::Command};
+    #[cfg(unix)]
+    use std::ffi::OsString;
+    use std::{path::PathBuf, process::Command};
 
     use argx::{Error, Parser as _};
 
@@ -52,16 +54,22 @@ mod tests {
     }
 
     #[derive(Debug, PartialEq, Eq, argx::Parser)]
+    // Raw argv bytes are constructed with unix extensions; the consumers below are unix-only.
+    #[cfg(unix)]
     struct PathCli {
         path: PathBuf,
     }
 
     #[derive(Debug, PartialEq, Eq, argx::Parser)]
+    // Raw argv bytes are constructed with unix extensions; the consumers below are unix-only.
+    #[cfg(unix)]
     struct OsStringCli {
         value: OsString,
     }
 
     #[derive(Debug, PartialEq, Eq, argx::Parser)]
+    // Raw argv bytes are constructed with unix extensions; the consumers below are unix-only.
+    #[cfg(unix)]
     struct TextCli {
         value: String,
     }
