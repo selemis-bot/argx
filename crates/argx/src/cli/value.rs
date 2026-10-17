@@ -144,7 +144,16 @@ fn text_bytes(value: Vec<u8>, name: &'static str) -> Result<String, Error> {
 
 /// Reconstructs an operating-system string from raw argv bytes.
 fn os_string(value: Vec<u8>) -> OsString {
-    use std::os::unix::ffi::OsStringExt as _;
+    #[cfg(unix)]
+    {
+        use std::os::unix::ffi::OsStringExt as _;
 
-    OsString::from_vec(value)
+        OsString::from_vec(value)
+    }
+    #[cfg(windows)]
+    {
+        // SAFETY: the bytes originated from `OsStr::as_encoded_bytes`, so they are a valid
+        // platform-native encoding; nothing mutated them since.
+        unsafe { OsString::from_encoded_bytes_unchecked(value) }
+    }
 }
